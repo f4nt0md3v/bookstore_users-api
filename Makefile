@@ -45,7 +45,7 @@ compile:
 	# Windows
 	GOOS=windows GOARCH=amd64 go build -o cmd/${PROJECT_NAME}-windows-amd64 ${GO_PACKAGE_NAME}
 
-lint:
+lint: fmt
 	golangci-lint run ./...
 
 visualize:
@@ -54,5 +54,5 @@ visualize:
 docker-build:
 	docker build -t ${DOCKER_IMAGE_NAME} .
 
-docker-run:
-	docker run -p 9090:9090 ${DOCKER_IMAGE_NAME}
+docker-run: docker-build
+	docker run --env-file .env -p ${APP_PORT}:${APP_PORT} ${DOCKER_IMAGE_NAME}
