@@ -10,11 +10,11 @@ import (
 )
 
 type User struct {
-	ID             int64     `json:"id"`
-	FirstName      string    `json:"first_name"`
-	LastName       string    `json:"last_name"`
-	Email          string    `json:"email"`
-	DateCreated    string    `json:"date_created"`
+	ID             int64     `json:"id"             binding:"-"`
+	FirstName      string    `json:"first_name"     binding:"required"`
+	LastName       string    `json:"last_name"      binding:"required"`
+	Email          string    `json:"email"          binding:"required"`
+	DateCreated    string    `json:"date_created"   bind:"-"`
 }
 
 type Users []User
