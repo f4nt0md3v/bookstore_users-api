@@ -8,6 +8,14 @@ type RestError struct {
 	StatusCode   int      `json:"status_code"`
 }
 
+func NewNotFoundError(message string) *RestError {
+	return &RestError{
+		Error:      "not_found",
+		Message:    message,
+		StatusCode: http.StatusNotFound,
+	}
+}
+
 func NewInternalServerError(message string) *RestError {
 	return &RestError{
 		Error:      "internal_server_error",

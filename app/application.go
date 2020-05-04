@@ -20,11 +20,6 @@ func StartApplication() {
 
 	mapUrls()
 
-	// err := r.Run(":8080")
-	// if err != nil {
-	// 	log.Println("[ERROR] running server on port :8080")
-	// }
-
 	srv := &http.Server{
 		Addr:           ":8080",
 		Handler:        r,
