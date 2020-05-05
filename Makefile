@@ -60,7 +60,14 @@ visualize:
 	go-callvis ${GO_PACKAGE_NAME}
 
 docker-build:
+	@echo "  >  Building docker images"
 	docker build -t ${DOCKER_IMAGE_NAME} .
 
 docker-run: docker-build
+	@echo "  >  Running docker images"
 	docker run --env-file .env -p ${APP_PORT}:${APP_PORT} ${DOCKER_IMAGE_NAME}
+
+.PHONY: compose
+compose:
+	@echo "  >  Running containers in docker-compose mode"
+	docker-compose up -d
