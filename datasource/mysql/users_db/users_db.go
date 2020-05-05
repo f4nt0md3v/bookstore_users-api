@@ -21,8 +21,8 @@ var (
 
 	username = os.Getenv(mysqlUsersUsername)
 	password = os.Getenv(mysqlUsersPassword)
-	host = os.Getenv(mysqlUsersHostname)
-	scheme = os.Getenv(mysqlUsersScheme)
+	host     = os.Getenv(mysqlUsersHostname)
+	scheme   = os.Getenv(mysqlUsersScheme)
 )
 
 func init() {

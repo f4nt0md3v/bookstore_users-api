@@ -14,7 +14,7 @@ type User struct {
 	FirstName      string    `json:"first_name"     binding:"required"`
 	LastName       string    `json:"last_name"      binding:"required"`
 	Email          string    `json:"email"          binding:"required"`
-	DateCreated    string    `json:"date_created"   bind:"-"`
+	DateCreated    string    `json:"date_created"   binding:"-"`
 }
 
 type Users []User
