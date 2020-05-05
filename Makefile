@@ -6,7 +6,15 @@ build:
 
 run:
 	@echo "  >  Running package..."
+	MYSQL_USERNAME=${MYSQL_USERNAME} \
+	MYSQL_PASSWORD=${MYSQL_PASSWORD} \
+	MYSQL_HOSTNAME=${MYSQL_HOSTNAME} \
+	MYSQL_DATABASE=${MYSQL_DATABASE} \
 	go run ${GO_PACKAGE_NAME}
+
+kill:
+	@echo "  >  Killing server..."
+	lsof -t -i tcp:8080 | xargs kill
 
 detect-race:
 	@echo "  >  Running package in race detection mode..."
