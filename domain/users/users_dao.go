@@ -5,18 +5,16 @@ package users
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/f4nt0md3v/bookstore_users-api/datasource/mysql/users_db"
 	"github.com/f4nt0md3v/bookstore_users-api/utils/date_utils"
 	"github.com/f4nt0md3v/bookstore_users-api/utils/errors"
+	"github.com/f4nt0md3v/bookstore_users-api/utils/mysql_utils"
 )
 
 const (
-	indexUniqueEmail = "email_UNIQUE"
-	errorNoRows      = "no rows in result set"
-	queryInsertUser  = "INSERT INTO users(first_name, last_name, email, date_created) VALUES(?, ?, ?, ?);"
-	queryGetUser     = "SELECT id, first_name, last_name, email, date_created FROM users WHERE id = ?;"
+	queryInsertUser       = "INSERT INTO users(first_name, last_name, email, date_created) VALUES(?, ?, ?, ?);"
+	queryGetUser          = "SELECT id, first_name, last_name, email, date_created FROM users WHERE id = ?;"
 )
 
 func (u *User) Get() *errors.RestError {
@@ -31,12 +29,8 @@ func (u *User) Get() *errors.RestError {
 
 	// Execute the SQL statement
 	res := stmt.QueryRow(u.ID)
-	if err := res.Scan(&u.ID, &u.FirstName, &u.LastName, &u.Email, &u.DateCreated); err != nil {
-		if strings.Contains(err.Error(), errorNoRows) {
-			return errors.NewNotFoundError(
-				fmt.Sprintf("user %d not found", u.ID))
-		}
-		return errors.NewInternalServerError(fmt.Sprintf("error when trying to get user with id %d: %s", u.ID, err.Error()))
+	if getErr := res.Scan(&u.ID, &u.FirstName, &u.LastName, &u.Email, &u.DateCreated); getErr != nil {
+		return mysql_utils.ParseError(getErr)
 	}
 
 	return nil
@@ -55,14 +49,9 @@ func (u *User) Save() *errors.RestError {
 	u.DateCreated = date_utils.GetNowString()
 
 	// Execute the SQL statement
-	insertResult, err := stmt.Exec(u.FirstName, u.LastName, u.Email, u.DateCreated)
-	if err != nil {
-		if strings.Contains(err.Error(), indexUniqueEmail) {
-			return errors.NewBadRequestError(
-				fmt.Sprintf("email %s already exists", u.Email))
-		}
-		return errors.NewInternalServerError(
-			fmt.Sprintf("error when trying to save user: %s", err.Error()))
+	insertResult, saveErr := stmt.Exec(u.FirstName, u.LastName, u.Email, u.DateCreated)
+	if saveErr != nil {
+		return mysql_utils.ParseError(saveErr)
 	}
 
 	// Another way of executing statement
