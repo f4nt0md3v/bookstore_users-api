@@ -11,7 +11,15 @@ import (
 	"github.com/f4nt0md3v/bookstore_users-api/utils/errors"
 )
 
-func CreateUser(c *gin.Context) {
+func getUserId(uidParam string) (int64, *errors.RestError) {
+	uid, parseErr := strconv.ParseInt(uidParam, 10, 64)
+	if parseErr != nil {
+		return 0, errors.NewBadRequestError("user id must be a number")
+	}
+	return uid, nil
+}
+
+func Create(c *gin.Context) {
 	var u users.User
 	if err := c.ShouldBindJSON(&u); err != nil {
 		restErr := errors.NewBadRequestError("invalid json body")
@@ -26,11 +34,10 @@ func CreateUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, res)
 }
 
-func GetUser(c *gin.Context) {
-	uid, parseErr := strconv.ParseInt(c.Param("id"), 10, 64)
+func Get(c *gin.Context) {
+	uid, parseErr := getUserId(c.Param("id"))
 	if parseErr != nil {
-		err := errors.NewBadRequestError("user id must be a number")
-		c.JSON(err.StatusCode, err)
+		c.JSON(parseErr.StatusCode, parseErr)
 		return
 	}
 	u, getErr := userservice.GetUser(uid)
@@ -41,11 +48,10 @@ func GetUser(c *gin.Context) {
 	c.JSON(http.StatusOK, u)
 }
 
-func UpdateUser(c *gin.Context) {
-	uid, parseErr := strconv.ParseInt(c.Param("id"), 10, 64)
+func Update(c *gin.Context) {
+	uid, parseErr := getUserId(c.Param("id"))
 	if parseErr != nil {
-		err := errors.NewBadRequestError("user id must be a number")
-		c.JSON(err.StatusCode, err)
+		c.JSON(parseErr.StatusCode, parseErr)
 		return
 	}
 	var u users.User
@@ -68,7 +74,15 @@ func UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-// TODO: implement later
-func DeleteUser(c *gin.Context) {
-	c.String(http.StatusNotImplemented, "implement me")
+func Delete(c *gin.Context) {
+	uid, parseErr := getUserId(c.Param("id"))
+	if parseErr != nil {
+		c.JSON(parseErr.StatusCode, parseErr)
+		return
+	}
+	if delErr := userservice.DeleteUser(uid); delErr != nil {
+		c.JSON(delErr.StatusCode, delErr)
+		return
+	}
+	c.JSON(http.StatusOK, map[string]string{"status":"deleted"})
 }
