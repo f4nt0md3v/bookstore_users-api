@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/f4nt0md3v/bookstore_users-api/domain/users"
-	userservice "github.com/f4nt0md3v/bookstore_users-api/service/users"
+	services "github.com/f4nt0md3v/bookstore_users-api/service/users"
 	"github.com/f4nt0md3v/bookstore_users-api/utils/errors"
 )
 
@@ -26,7 +26,7 @@ func Create(c *gin.Context) {
 		c.JSON(restErr.StatusCode, restErr)
 		return
 	}
-	newUser, saveErr := userservice.CreateUser(u)
+	newUser, saveErr := services.CreateUser(u)
 	if saveErr != nil {
 		c.JSON(saveErr.StatusCode, saveErr)
 		return
@@ -41,7 +41,7 @@ func Get(c *gin.Context) {
 		c.JSON(parseErr.StatusCode, parseErr)
 		return
 	}
-	u, getErr := userservice.GetUser(uid)
+	u, getErr := services.GetUser(uid)
 	if getErr != nil {
 		c.JSON(getErr.StatusCode, getErr)
 		return
@@ -67,7 +67,7 @@ func Update(c *gin.Context) {
 
 	// PATCH (partial update) or PUT (full update)
 	isPartial := c.Request.Method == http.MethodPatch
-	updUser, updErr := userservice.UpdateUser(isPartial, u)
+	updUser, updErr := services.UpdateUser(isPartial, u)
 
 	if updErr != nil {
 		c.JSON(updErr.StatusCode, updErr)
@@ -83,7 +83,7 @@ func Delete(c *gin.Context) {
 		c.JSON(parseErr.StatusCode, parseErr)
 		return
 	}
-	if delErr := userservice.DeleteUser(uid); delErr != nil {
+	if delErr := services.DeleteUser(uid); delErr != nil {
 		c.JSON(delErr.StatusCode, delErr)
 		return
 	}
@@ -93,7 +93,7 @@ func Delete(c *gin.Context) {
 func Search(c *gin.Context) {
 	status := c.Query("status")
 
-	search, err := userservice.Search(status)
+	search, err := services.Search(status)
 	if err != nil {
 		c.JSON(err.StatusCode, err)
 		return
