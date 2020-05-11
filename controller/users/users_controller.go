@@ -26,12 +26,13 @@ func Create(c *gin.Context) {
 		c.JSON(restErr.StatusCode, restErr)
 		return
 	}
-	res, saveErr := userservice.CreateUser(u)
+	newUser, saveErr := userservice.CreateUser(u)
 	if saveErr != nil {
 		c.JSON(saveErr.StatusCode, saveErr)
 		return
 	}
-	c.JSON(http.StatusCreated, res)
+
+	c.JSON(http.StatusCreated, newUser.Marshall(c.GetHeader("X-Public") == "true"))
 }
 
 func Get(c *gin.Context) {
@@ -45,7 +46,8 @@ func Get(c *gin.Context) {
 		c.JSON(getErr.StatusCode, getErr)
 		return
 	}
-	c.JSON(http.StatusOK, u)
+
+	c.JSON(http.StatusOK, u.Marshall(c.GetHeader("X-Public") == "true"))
 }
 
 func Update(c *gin.Context) {
@@ -65,13 +67,14 @@ func Update(c *gin.Context) {
 
 	// PATCH (partial update) or PUT (full update)
 	isPartial := c.Request.Method == http.MethodPatch
-	res, updErr := userservice.UpdateUser(isPartial, u)
+	updUser, updErr := userservice.UpdateUser(isPartial, u)
 
 	if updErr != nil {
 		c.JSON(updErr.StatusCode, updErr)
 		return
 	}
-	c.JSON(http.StatusOK, res)
+
+	c.JSON(http.StatusOK, updUser.Marshall(c.GetHeader("X-Public") == "true"))
 }
 
 func Delete(c *gin.Context) {
@@ -90,10 +93,11 @@ func Delete(c *gin.Context) {
 func Search(c *gin.Context) {
 	status := c.Query("status")
 
-	result, err := userservice.Search(status)
+	search, err := userservice.Search(status)
 	if err != nil {
 		c.JSON(err.StatusCode, err)
 		return
 	}
-	c.JSON(http.StatusOK, result)
+
+	c.JSON(http.StatusOK, search.Marshall(c.GetHeader("X-Public") == "true"))
 }
