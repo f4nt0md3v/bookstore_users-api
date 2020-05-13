@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/f4nt0md3v/bookstore_users-api/logger"
 )
 
 var (
@@ -19,6 +21,8 @@ var (
 func StartApplication() {
 
 	mapUrls()
+
+	logger.Info("about to start the application")
 
 	srv := &http.Server{
 		Addr:           ":8080",
@@ -45,7 +49,7 @@ func StartApplication() {
 	signal.Notify(quit, syscall.SIGINT)
 	signal.Notify(quit, syscall.SIGTERM)
 	<-quit
-	log.Println("Shutdown Server ...")
+	logger.Info("Shutdown Server ...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
 	defer cancel()

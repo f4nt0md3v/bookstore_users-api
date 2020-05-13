@@ -1,11 +1,18 @@
 package errors
 
-import "net/http"
+import (
+	"errors"
+	"net/http"
+)
 
 type RestError struct {
 	Error        string   `json:"error"`
 	Message      string   `json:"message"`
 	StatusCode   int      `json:"status_code"`
+}
+
+func NewError(msg string) error {
+	return errors.New(msg)
 }
 
 func NewNotFoundError(message string) *RestError {
